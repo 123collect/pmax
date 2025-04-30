@@ -36,10 +36,17 @@ jobs:
           echo '  return { statusCode: 200, body: JSON.stringify(data) };' >> ./functions/fetchEporner.js
           echo '};' >> ./functions/fetchEporner.js
 
-      - name: Commit and push the changes
+      - name: Set up Git configuration
         run: |
           git config --global user.name "Your GitHub Username"
           git config --global user.email "Your GitHub Email"
+
+      - name: Authenticate with GitHub
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Commit and push the changes
+        run: |
           git add .
           git commit -m "Deploy serverless function"
           git push origin main
