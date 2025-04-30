@@ -43,7 +43,13 @@ jobs:
 
       - name: Authenticate with GitHub
         run: |
+          echo "Authenticating with GitHub..."
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote -v  # Display the remote URL for debugging
+
+      - name: Check Git status
+        run: |
+          git status  # Show the status of the repository before pushing for debugging
 
       - name: Commit and push the changes
         run: |
