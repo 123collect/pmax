@@ -3,24 +3,30 @@ name: Deploy Eporner Function
 on:
   push:
     branches:
-      - main # This will trigger the action when you push to the 'main' branch
+      - main  # Trigger the action on push to the 'main' branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # We are using the latest Ubuntu runner for this job
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2 # This checks out your code from the repository
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2 # Sets up Node.js on the runner
+        uses: actions/setup-node@v2
         with:
-          node-version: '14' # Use Node.js version 14
+          node-version: '14'  # Use Node.js version 14
+
+      - name: Install dependencies
+        run: |
+          mkdir -p ./functions
+          cd ./functions
+          npm init -y
+          npm install node-fetch
 
       - name: Create the function to fetch Eporner videos
         run: |
-          mkdir -p ./functions # Create a folder to store your function
           echo 'const fetch = require("node-fetch");' > ./functions/fetchEporner.js
           echo 'exports.handler = async (event) => {' >> ./functions/fetchEporner.js
           echo '  const query = event.queryStringParameters.q || "trending";' >> ./functions/fetchEporner.js
@@ -30,10 +36,10 @@ jobs:
           echo '  return { statusCode: 200, body: JSON.stringify(data) };' >> ./functions/fetchEporner.js
           echo '};' >> ./functions/fetchEporner.js
 
-          # Commit and push the function to the repository
+      - name: Commit and push the changes
+        run: |
           git config --global user.name "Your GitHub Username"
           git config --global user.email "Your GitHub Email"
           git add .
           git commit -m "Deploy serverless function"
           git push origin main
-
